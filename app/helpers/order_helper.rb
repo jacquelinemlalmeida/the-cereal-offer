@@ -13,8 +13,17 @@ module OrderHelper
   
   def calculate_discount(line_items) 
     items = {}
+    # CON: Could use .compact instead of .reject { |i| i.blank? }
     @line_items = line_items.reject {|i| i.blank?}
 
+    # CON: It seems like you've filtered the line_items above
+    # and saved it to @line_items, but it you are using
+    # the original argument with possibly nil items
+    # inside the map and doing again: next if item.blank?
+    # and then at the end using .compact
+    #
+    # I think you could simply do @line_items.map to avoid
+    # checking again if them is blank and remove the .compact
     items[:line_items] = line_items.map do |item|
       @item = item
       next if item.blank?
@@ -26,6 +35,9 @@ module OrderHelper
       end
     end.compact
 
+    # Could solve with a single iteration of the sum call:
+    #
+    # items[:line_items].sum { |item| item[:discounted_price] }
     total_discount = items[:line_items].pluck(:discounted_price).sum()
     
     items.merge({total_discount: total_discount})
@@ -33,6 +45,9 @@ module OrderHelper
 
   private 
   
+  # CON: This method is being used multiple times, could use
+  # some type of memoization to avoid calculating the same
+  # value multiple times.
   def total_of_discounted_items
     @line_items.reject {|i| EXCLUDED_BRANDS.include? i[:collection]}.size
   end
