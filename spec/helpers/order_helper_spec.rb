@@ -1,8 +1,15 @@
 require 'rails_helper'
 
+# PRO: Tests with rspec, great job!
+# CON: Could test also if each individual item has the
+# correct discounted price. The total discount may be
+# very likely to already confirm that but not necessarily.
+#
+# For example: 23 + 7 == 13 + 17
 RSpec.describe OrderHelper, type: :helper do
 
   describe '#calculate_discount' do
+    # PRO: Test case with more than 5 items, nice!
     it "should return a 25% of discount for a cart with 5 or more cereal boxes diff from brand KETO" do
       line_items = [
         { "name": "Peanut Butter", "price": "10.0", "collection": "BEST-SELLERS" },

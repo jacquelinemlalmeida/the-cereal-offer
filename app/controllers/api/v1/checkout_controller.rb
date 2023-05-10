@@ -2,11 +2,15 @@ class Api::V1::CheckoutController < Api::ApiController
 include OrderHelper
 
   def checkout 
+    # CON: Not using Rails permitted params, e.g.:
+    #
+    # params.require(:cart).permit(:reference, lineItems: [:name, :price, :collection])
     cart = params["cart"]
 
     if cart.present? 
 
       if cart["lineItems"].present?
+        # CON: Could avoid all of these map operations with permitted params
         line_items = cart["lineItems"].map(&:to_enum).map(&:to_h).map(&:symbolize_keys!)
         
         response = calculate_discount(line_items)
